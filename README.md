@@ -1,76 +1,42 @@
-# opencv
-简单讲解在Mac和linux上使用和安装配置opencv环境
-1-mac上安装opencv
-brew install ant
-brew install opencv
-brew edit opencv
-修改 -DBUILD_opencv_java=OFF in -DBUILD_opencv_java=ON 
-获取libopencv_java341.dylib opencv-341.jar 文件(从官网下载源码经过编译后在build文件中生成的文件)
-在idea中使用 mvn install:install-file -DgroupId=nu.pattern -DartifactId=opencv -Dversion=1.0 -Dpackaging=jar -Dfile=opencv3.4.1.jar
-直接在maven项目中使用 
-		<dependency>
-            <groupId>nu.pattern</groupId>
-            <artifactId>opencv</artifactId>
-            <version>3.4.1</version>
-        </dependency>
- public class SampleCVUtils {
-    public static void main(String[] args) {
-        String path;
-        if (args.length == 0) {
-            path = System.getProperty("user.dir") + "/src/main/resources/libopencv_java341.dylib";
-        } else {
-            ///home/ubuntu/libopencv_java341.so
-            path = args[0];
-        }
-        System.out.println("path = " + path);/// Users/lhh/Desktop/opencvtest/src/main/resources/libopencv_java341.dylib
-        System.load(path);
-        System.out.println(Core.VERSION);
-        Mat eye = Mat.eye(3, 3, CvType.CV_8UC1);
-        System.out.println("eye = " + eye.dump());
-    }
 
-}
+> @author Hh.li1993
 
-结果;
-3.4.1
-eye = [  1,   0,   0;
-   0,   1,   0;
-   0,   0,   1]
-  配置成功
+## Install OpenCV3 on Ubuntu or mac 
+### Install OpenCV3 on Ubuntu (linux Ubuntu Ubuntu Server 16.04 LTS java1.8 ant python3 环境 )
+#### 只是测试了java 环境 (python网上一大堆)
 
-2-Install OpenCV3 on Ubuntu (linux Ubuntu Ubuntu Server 16.04 LTS java1.8 ant python3 环境 )
- //没有测试python环境只是测试了java 环境
- 2.1- https://github.com/opencv/opencv.git 下载zip文件 
- 上传到linux 
- 2.2- 配置java环境
+```
+2.2- 配置java环境
+	从 https://github.com/opencv/opencv.git 下载zip文件 上传到linux 
+	sudo apt-get update
+	sudo add-apt-repository ppa:webupd8team/java
+	sudo apt-get update
+	sudo apt-get install oracle-java8-installer
+	echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+	sudo update-java-alternatives -s java-8-oracle
+	测试jdk 是是否安装成功:
+	javac -version
+
+	配置JAVA_HOME(在这里不配置JAVA_HOME会导致opencv编译和java没有关系)
+	/usr/lib/jvm/java-8-oracle
+	vim /etc/profile
+
+	export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+	export JRE_HOME=${JAVA_HOME}/jre   
+	export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
+	export PATH=${JAVA_HOME}/bin:$PATH
+	source /etc/profile
+```
+```
+2.3配置安装 Apache Ant
+	sudo apt-get install ant
+	sudo yum install ant
+	#Verify Installation of Apache Ant
+	ant -version
+```
+```
+2.4配置 opencv linux环境
 sudo apt-get update
-sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
-sudo apt-get install oracle-java8-installer
-echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-sudo update-java-alternatives -s java-8-oracle
-测试jdk 是是否安装成功:
-javac -version
-
-配置JAVA_HOME(在这里不配置JAVA_HOME会导致opencv编译和java没有关系)
-/usr/lib/jvm/java-8-oracle
-vim /etc/profile
-
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-export JRE_HOME=${JAVA_HOME}/jre   
-export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
-export PATH=${JAVA_HOME}/bin:$PATH
-source /etc/profile
-2.2.2
-配置安装 Apache Ant
-sudo apt-get install ant
-sudo yum install ant
-#Verify Installation of Apache Ant
-ant -version
-
- 2.3-配置 opencv linux环境
-
- sudo apt-get update
  sudo apt-get upgrade
 Remove any previous installations of x264
 sudo apt-get remove x264 libx264-dev
@@ -105,7 +71,6 @@ mkvirtualenv facecourse-py3 -p python3
 workon facecourse-py3
 pip3 install numpy scipy matplotlib scikit-image scikit-learn ipython -i http://pypi.douban.com/simple 
 deactivate
-
 #进入到之前解压的opencv的文件夹
 nkdir build 
 cd build 
@@ -116,43 +81,108 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
 		--     JNI:                         /usr/lib/jvm/java-8-oracle/include /usr/lib/jvm/java-8-oracle/include/linux /usr/lib/jvm/java-8-oracle/include
 		--     Java wrappers:               YES
 		--     Java tests:                  NO
-
-   说明目前没有出错!
+说明目前没有出错!
    接下来 在build文件里执行
   make
   完成后会在build/bin 文件里生成opencv-341.jar 和会在build/lib 中生成libopencv_java341.so   
 
-2.4-测试
-在mac上的jar和linux上的是相同的都是JNI接口
-把之前的mac的代码拿来就用
-在pom加上中配置
-<build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>SampleCVUtils</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    在maven中使用assembly:assembly 命令把当前的依赖打成jar包 放到linux下 
-    运行 java -classpath opencvtest-1.0-SNAPSHOT-jar-with-dependencies.jar SampleCVUtils /home/ubuntu/libopencv_java341.so (/home/ubuntu/libopencv_java341.so表示的是在linux下的libopencv_java341.so路径编译成功后原始是在build/lib下)
 
-    显示
+> 直接在maven项目中使用 
+>	
 
-    path = /home/ubuntu/libopencv_java341.so
-	3.4.1
-	eye = [  1,   0,   0;
-	   0,   1,   0;
-	   0,   0,   1]
+```		<!-- pom -->
+		<dependency>
+            <groupId>nu.pattern</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+        //代码
+        public class SampleCVUtils {
+    public static void main(String[] args) {
+        String path;
+        if (args.length == 0) {
+            path = System.getProperty("user.dir") + "/src/main/resources/libopencv_java341.dylib";
+        } else {
+            ///home/ubuntu/libopencv_java341.so
+            path = args[0];
+        }
+        System.out.println("path = " + path);
+        System.load(path);
+        System.out.println(Core.VERSION);
+        Mat eye = Mat.eye(3, 3, CvType.CV_8UC1);
+        System.out.println("eye = " + eye.dump());
+    }
+
+}
 
 
-	 则表示在linux上配置成功!
+```
+
+> 在maven中使用assembly:assembly 命令把当前的依赖打成jar包 放到linux下 
+> 运行 java -classpath opencvtest-1.0-SNAPSHOT-jar-with-dependencies.jar SampleCVUtils /home/ubuntu/libopencv_java341.so (/home/ubuntu/
+>libopencv_java341.so表示的是在linux下的libopencv_java341.so路径编译成功后原始是在build/lib下)
+>
+> 成功 
+
+```
+3.4.1
+eye = [  1,   0,   0;
+   0,   1,   0;
+   0,   0,   1]
+```
+
+### mac上安装opencv
+
+```
+    brew install ant
+    brew install opencv
+    brew edit opencv
+
+```
+修改 -DBUILD_opencv_java=OFF in -DBUILD_opencv_java=ON 
+获取libopencv_java341.dylib opencv-341.jar 文件(从官网下载源码经过编译后在build文件中生成的文件)
+在idea中使用 mvn install:install-file -DgroupId=nu.pattern -DartifactId=opencv -Dversion=1.0 -Dpackaging=jar -Dfile=opencv3.4.1.jar
+
+> 直接在maven项目中使用 
+>	
+
+```		<!-- pom -->
+		<dependency>
+            <groupId>nu.pattern</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+        //代码
+        public class SampleCVUtils {
+    public static void main(String[] args) {
+        String path;
+        if (args.length == 0) {
+            path = System.getProperty("user.dir") + "/src/main/resources/libopencv_java341.dylib";
+        } else {
+            ///home/ubuntu/libopencv_java341.so
+            path = args[0];
+        }
+        System.out.println("path = " + path);
+        System.load(path);
+        System.out.println(Core.VERSION);
+        Mat eye = Mat.eye(3, 3, CvType.CV_8UC1);
+        System.out.println("eye = " + eye.dump());
+    }
+
+}
+
+
+```
+
+> 控制台打印结果
+>
+> 成功 
+
+```
+3.4.1
+eye = [  1,   0,   0;
+   0,   1,   0;
+   0,   0,   1]
+```
