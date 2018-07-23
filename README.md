@@ -1,0 +1,2 @@
+# opencv
+简单讲解在Mac和linux上使用和安装配置opencv环境
