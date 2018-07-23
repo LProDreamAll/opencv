@@ -1,5 +1,5 @@
 
-> @author Hh.li1993
+> @author Hh.li1993 https://github.com/LProDreamAll/opencv/blob/master/README.md
 
 ## Install OpenCV3 on Ubuntu or mac 
 ### Install OpenCV3 on Ubuntu (linux Ubuntu Ubuntu Server 16.04 LTS java1.8 ant python3 环境 )
@@ -86,11 +86,9 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
   make
   完成后会在build/bin 文件里生成opencv-341.jar 和会在build/lib 中生成libopencv_java341.so   
 
-
-> 直接在maven项目中使用 
->	
-
-```		<!-- pom -->
+```		
+直接在maven项目中使用	
+	<!-- pom -->
 		<dependency>
             <groupId>nu.pattern</groupId>
             <artifactId>opencv</artifactId>
@@ -143,11 +141,11 @@ eye = [  1,   0,   0;
 修改 -DBUILD_opencv_java=OFF in -DBUILD_opencv_java=ON 
 获取libopencv_java341.dylib opencv-341.jar 文件(从官网下载源码经过编译后在build文件中生成的文件)
 在idea中使用 mvn install:install-file -DgroupId=nu.pattern -DartifactId=opencv -Dversion=1.0 -Dpackaging=jar -Dfile=opencv3.4.1.jar
-
-> 直接在maven项目中使用 
->	
-
-```		<!-- pom -->
+ 
+```	
+```	
+		直接在maven项目中使用	
+		<!-- pom -->
 		<dependency>
             <groupId>nu.pattern</groupId>
             <artifactId>opencv</artifactId>
